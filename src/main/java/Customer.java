@@ -1,4 +1,3 @@
-// Customer.java
 public class Customer {
     private String name;
     private String stateOfResidence; // e.g., "IL", "CA", "NY", "TX"

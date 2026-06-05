@@ -1,4 +1,3 @@
-// Item.java
 import java.util.Objects;
 
 public class Item {

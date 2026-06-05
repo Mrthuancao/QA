@@ -1,4 +1,3 @@
-// CartItem.java
 public class CartItem {
     private Item item;
     private int quantity;
@@ -26,6 +25,8 @@ public class CartItem {
 
     @Override
     public String toString() {
-        return String.format("%-20s x %-3d = $%.2f", item.getName(), quantity, getTotalPrice());
+        // Simple output without explicit padding for alignment.
+        // This will produce strings like: "Laptop x 2 = $2400.00"
+        return String.format("%s x %d = $%.2f", item.getName(), quantity, getTotalPrice());
     }
 }

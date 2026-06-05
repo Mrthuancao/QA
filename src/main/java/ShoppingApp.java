@@ -1,4 +1,3 @@
-// ShoppingApp.java
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,32 +6,35 @@ import java.util.Scanner;
 
 public class ShoppingApp {
 
-    private ShoppingCart cart;
-    private Customer customer;
-    private List<Item> availableItems;
-    private Scanner scanner;
-    private String shippingOption; // "STANDARD" or "NEXT_DAY"
+    ShoppingCart cart;
+    Customer customer;
+    List<Item> availableItems;
+    Scanner scanner;
+    String shippingOption; // "STANDARD" or "NEXT_DAY"
 
-    private static final double MIN_PURCHASE_AMOUNT = 1.00;
-    private static final double MAX_PURCHASE_AMOUNT = 99999.99;
-    private static final double TAX_RATE = 0.06; // 6%
-    private static final String[] TAXABLE_STATES = {"IL", "CA", "NY"};
-    private static final double STANDARD_SHIPPING_COST = 10.00;
-    private static final double STANDARD_SHIPPING_FREE_THRESHOLD = 50.00;
-    private static final double NEXT_DAY_SHIPPING_COST = 25.00;
+    static final double MIN_PURCHASE_AMOUNT = 1.00;
+    static final double MAX_PURCHASE_AMOUNT = 99999.99;
+    static final double TAX_RATE = 0.06; // 6%
+    static final String[] TAXABLE_STATES = {"IL", "CA", "NY"};
+    static final double STANDARD_SHIPPING_COST = 10.00;
+    static final double STANDARD_SHIPPING_FREE_THRESHOLD = 50.00;
+    static final double NEXT_DAY_SHIPPING_COST = 25.00;
+
+    public ShoppingApp(Scanner scanner) {
+        this.scanner = scanner;
+        this.cart = new ShoppingCart();
+        this.availableItems = new ArrayList<>();
+        this.availableItems.add(new Item("Laptop", 1200.00));
+        this.availableItems.add(new Item("Mouse", 25.50));
+        this.availableItems.add(new Item("Keyboard", 75.00));
+        this.availableItems.add(new Item("Monitor", 300.00));
+        this.availableItems.add(new Item("Webcam", 49.99));
+        this.availableItems.add(new Item("Headphones", 150.00));
+        this.availableItems.add(new Item("USB Drive", 15.99));
+    }
 
     public ShoppingApp() {
-        cart = new ShoppingCart();
-        scanner = new Scanner(System.in);
-        availableItems = new ArrayList<>();
-        // Populate some sample items
-        availableItems.add(new Item("Laptop", 1200.00));
-        availableItems.add(new Item("Mouse", 25.50));
-        availableItems.add(new Item("Keyboard", 75.00));
-        availableItems.add(new Item("Monitor", 300.00));
-        availableItems.add(new Item("Webcam", 49.99));
-        availableItems.add(new Item("Headphones", 150.00));
-        availableItems.add(new Item("USB Drive", 15.99));
+        this(new Scanner(System.in));
     }
 
     public static void main(String[] args) {
@@ -68,21 +70,21 @@ public class ShoppingApp {
                     break;
                 case 6:
                     checkout();
-                    running = false; // Exit after checkout
+                    running = false; 
                     break;
                 case 0:
                     System.out.println("Exiting application. Goodbye!");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid input. Please enter a number.");
             }
-            System.out.println("\n------------------------------------\n");
+            System.out.print("\n------------------------------------\n");
         }
         scanner.close();
     }
 
-    private void getCustomerInfo() {
+    void getCustomerInfo() {
         String name;
         String state;
 
@@ -92,7 +94,7 @@ public class ShoppingApp {
         while (true) {
             System.out.print("Please enter your state of residence (e.g., IL, CA, NY): ");
             state = scanner.nextLine().toUpperCase();
-            if (state.matches("[A-Z]{2}")) { // Basic validation for two uppercase letters
+            if (state.matches("[A-Z]{2}")) { 
                 break;
             } else {
                 System.out.println("Invalid state format. Please enter a two-letter state code.");
@@ -102,7 +104,7 @@ public class ShoppingApp {
         System.out.println("Welcome, " + customer.getName() + " from " + customer.getStateOfResidence() + "!");
     }
 
-    private void selectShippingOption() {
+    void selectShippingOption() {
         while (true) {
             System.out.println("\nSelect a shipping option:");
             System.out.println("1. Standard Shipping");
@@ -124,7 +126,7 @@ public class ShoppingApp {
         }
     }
 
-    private void displayMenu() {
+    void displayMenu() {
         System.out.println("Shopping Application Menu:");
         System.out.println("1. Add item to cart");
         System.out.println("2. See contents of shopping cart");
@@ -133,53 +135,57 @@ public class ShoppingApp {
         System.out.println("5. Get current total");
         System.out.println("6. Checkout");
         System.out.println("0. Exit");
-        System.out.print("Enter your choice: ");
     }
 
-    private int getUserChoice() {
+    int getUserChoice() {
+        System.out.print("Enter your choice: ");
         while (!scanner.hasNextInt()) {
             System.out.println("Invalid input. Please enter a number.");
-            scanner.next(); // consume the invalid input
+            scanner.next(); 
             System.out.print("Enter your choice: ");
         }
         int choice = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine(); 
         return choice;
     }
 
-    private void displayAvailableItems() {
+    void displayAvailableItems() {
         System.out.println("\nAvailable Items:");
         for (int i = 0; i < availableItems.size(); i++) {
             System.out.println((i + 1) + ". " + availableItems.get(i));
         }
     }
 
-    private Item getItemSelection() {
+    Item getItemSelection() {
         displayAvailableItems();
-        System.out.print("Enter the number of the item you want to select: ");
+        System.out.print("Enter the number of the item you want to select (or 0 to cancel): ");
         while (true) {
             if (scanner.hasNextInt()) {
                 int itemIndex = scanner.nextInt();
-                scanner.nextLine(); // consume newline
-                if (itemIndex > 0 && itemIndex <= availableItems.size()) {
+                scanner.nextLine(); 
+                if (itemIndex == 0) {
+                    return null;
+                }
+                // Combined boundary checks to kill boundary mutants cleanly
+                if (itemIndex >= 1 && itemIndex <= availableItems.size()) {
                     return availableItems.get(itemIndex - 1);
                 } else {
                     System.out.println("Invalid item number. Please try again.");
                 }
             } else {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.next(); // consume invalid input
+                scanner.next(); 
             }
-            System.out.print("Enter the number of the item: ");
+            System.out.print("Enter the number of the item: "); 
         }
     }
 
-    private int getQuantityInput() {
+    int getQuantityInput() {
         System.out.print("Enter quantity: ");
         while (true) {
             if (scanner.hasNextInt()) {
                 int quantity = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+                scanner.nextLine(); 
                 if (quantity > 0) {
                     return quantity;
                 } else {
@@ -187,21 +193,24 @@ public class ShoppingApp {
                 }
             } else {
                 System.out.println("Invalid input. Please enter a whole number for quantity.");
-                scanner.next(); // consume invalid input
+                scanner.next(); 
             }
             System.out.print("Enter quantity: ");
         }
     }
 
-    private void addItemToCart() {
+    void addItemToCart() {
         Item selectedItem = getItemSelection();
         if (selectedItem != null) {
             int quantity = getQuantityInput();
             cart.addItem(selectedItem, quantity);
+            System.out.println(selectedItem.getName() + " added to cart. Current items in cart: " + cart.getItemCount());
+        } else {
+            System.out.println("Item selection cancelled.");
         }
     }
 
-    private void viewCartContents() {
+    void viewCartContents() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty.");
             return;
@@ -213,7 +222,7 @@ public class ShoppingApp {
         System.out.println("--------------------------");
     }
 
-    private void editItemQuantity() {
+    void editItemQuantity() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty. Nothing to edit.");
             return;
@@ -228,28 +237,38 @@ public class ShoppingApp {
 
         if (cartItemToEdit.isPresent()) {
             System.out.print("Enter new quantity for " + cartItemToEdit.get().getItem().getName() + " (enter 0 to remove): ");
+            int newQuantity;
             while (true) {
                 if (scanner.hasNextInt()) {
-                    int newQuantity = scanner.nextInt();
-                    scanner.nextLine(); // consume newline
-                    if (newQuantity >= 0) {
-                        cart.updateItemQuantity(cartItemToEdit.get().getItem(), newQuantity);
-                        break;
-                    } else {
-                        System.out.println("Quantity cannot be negative. Please enter a non-negative number.");
+                    newQuantity = scanner.nextInt();
+                    scanner.nextLine(); 
+                    if (newQuantity < 0) {
+                        System.out.println("Quantity must be greater than zero. Please try again.");
+                    } else { 
+                        break; 
                     }
                 } else {
                     System.out.println("Invalid input. Please enter a whole number for quantity.");
-                    scanner.next(); // consume invalid input
+                    scanner.next(); 
                 }
                 System.out.print("Enter new quantity: ");
+            }
+
+            if (cart.updateItemQuantity(cartItemToEdit.get().getItem(), newQuantity)) {
+                if (newQuantity == 0) {
+                    System.out.println(cartItemToEdit.get().getItem().getName() + " removed from cart.");
+                } else {
+                    System.out.println("Quantity for " + cartItemToEdit.get().getItem().getName() + " updated to " + newQuantity + ".");
+                }
+            } else {
+                System.out.println("Failed to update quantity for " + cartItemToEdit.get().getItem().getName() + ". Please try again.");
             }
         } else {
             System.out.println("Item '" + itemName + "' not found in your cart.");
         }
     }
 
-    private void removeItemFromCart() {
+    void removeItemFromCart() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty. Nothing to remove.");
             return;
@@ -263,30 +282,37 @@ public class ShoppingApp {
                 .findFirst();
 
         if (cartItemToRemove.isPresent()) {
-            cart.removeItem(cartItemToRemove.get().getItem());
+            if (cart.removeItem(cartItemToRemove.get().getItem())) {
+                System.out.println(cartItemToRemove.get().getItem().getName() + " removed from cart.");
+            } else {
+                System.out.println("Failed to remove " + cartItemToRemove.get().getItem().getName() + " from cart. Please try again.");
+            }
         } else {
             System.out.println("Item '" + itemName + "' not found in your cart.");
         }
     }
 
-
-    private double calculateSalesTax(double subtotal) {
-        if (Arrays.asList(TAXABLE_STATES).contains(customer.getStateOfResidence())) {
+    double calculateSalesTax(double subtotal) {
+        if (customer != null && Arrays.asList(TAXABLE_STATES).contains(customer.getStateOfResidence())) {
             return subtotal * TAX_RATE;
         }
         return 0.0;
     }
 
-    private double calculateShippingCost(double subtotal) {
+    double calculateShippingCost(double subtotal) {
         if ("STANDARD".equals(shippingOption)) {
-            return (subtotal > STANDARD_SHIPPING_FREE_THRESHOLD) ? 0.0 : STANDARD_SHIPPING_COST;
+            if (subtotal >= STANDARD_SHIPPING_FREE_THRESHOLD) {
+                return 0.0;
+            } else {
+                return STANDARD_SHIPPING_COST;
+            }
         } else if ("NEXT_DAY".equals(shippingOption)) {
             return NEXT_DAY_SHIPPING_COST;
         }
-        return 0.0; // Should not happen if shippingOption is always set
+        return 0.0; 
     }
 
-    private void calculateAndDisplayTotal() {
+    void calculateAndDisplayTotal() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty. No total to calculate.");
             return;
@@ -294,7 +320,6 @@ public class ShoppingApp {
 
         double subtotal = cart.calculateSubtotal();
 
-        // Validate purchase amount
         if (subtotal < MIN_PURCHASE_AMOUNT) {
             System.out.println("Error: Minimum acceptable purchase amount is $" + String.format("%.2f", MIN_PURCHASE_AMOUNT) + ". Your current subtotal is $" + String.format("%.2f", subtotal) + ".");
             return;
@@ -309,15 +334,15 @@ public class ShoppingApp {
         double total = subtotal + tax + shipping;
 
         System.out.println("\n--- Order Summary ---");
-        viewCartContents(); // Show cart contents again
+        viewCartContents(); 
         System.out.println("Raw Purchase Price (Subtotal): $" + String.format("%.2f", subtotal));
-        System.out.println("Sales Tax (" + (TAX_RATE * 100) + "% for " + customer.getStateOfResidence() + "): $" + String.format("%.2f", tax));
+        System.out.println("Sales Tax: $" + String.format("%.2f", tax));
         System.out.println("Shipping (" + shippingOption + "): $" + String.format("%.2f", shipping));
         System.out.println("Total: $" + String.format("%.2f", total));
-        System.out.println("---------------------");
+        System.out.print("---------------------\n"); 
     }
 
-    private void checkout() {
+    void checkout() {
         if (cart.isEmpty()) {
             System.out.println("Your shopping cart is empty. Cannot checkout.");
             return;
@@ -325,7 +350,6 @@ public class ShoppingApp {
 
         double subtotal = cart.calculateSubtotal();
 
-        // Re-validate purchase amount before final checkout
         if (subtotal < MIN_PURCHASE_AMOUNT) {
             System.out.println("Checkout failed: Minimum acceptable purchase amount is $" + String.format("%.2f", MIN_PURCHASE_AMOUNT) + ". Your current subtotal is $" + String.format("%.2f", subtotal) + ".");
             return;
@@ -335,8 +359,8 @@ public class ShoppingApp {
             return;
         }
 
-        calculateAndDisplayTotal(); // Display final summary
+        calculateAndDisplayTotal(); 
         System.out.println("\n--- Transaction completed! ---");
-        cart.clearCart(); // Clear cart after successful checkout
+        cart.clearCart(); 
     }
 }
